@@ -1,0 +1,54 @@
+name: Build Essential PH-1 Kernel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout builder
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          bc bison flex build-essential \
+          libssl-dev libelf-dev \
+          python3 rsync cpio git
+
+    - name: Clone kernel source
+      run: |
+        git clone https://github.com/Tomoms/android_kernel_essential_msm8998 kernel
+
+    - name: Download clang
+      run: |
+        git clone --depth=1 \
+          https://github.com/kdrag0n/proton-clang \
+          clang
+
+    - name: Build kernel
+      run: |
+        cd kernel
+
+        export ARCH=arm64
+        export SUBARCH=arm64
+
+        export PATH=$GITHUB_WORKSPACE/clang/bin:$PATH
+
+        make O=out mata_defconfig
+
+        make -j$(nproc) \
+          O=out \
+          ARCH=arm64 \
+          CC=clang \
+          CLANG_TRIPLE=aarch64-linux-gnu-
+
+    - name: Upload kernel
+      uses: actions/upload-artifact@v4
+      with:
+        name: mata-kernel
+        path: |
+          kernel/out/arch/arm64/boot/*
