@@ -38,6 +38,14 @@ jobs:
 
         export PATH=$GITHUB_WORKSPACE/clang/bin:$PATH
 
+        which ld
+        ld --version
+        
+        which clang
+        clang --version
+        
+        echo $PATH
+
         make O=out lineage_osmata_defconfig
 
         make -j$(nproc) \
