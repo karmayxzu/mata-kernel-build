@@ -30,7 +30,7 @@ jobs:
         export ARCH=arm64
         export SUBARCH=arm64
         
-        make O=out lineage_osmata_defconfig
+        make O=out lineageos_mata_defconfig
         
         make -j$(nproc) O=out
 
