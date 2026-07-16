@@ -23,36 +23,16 @@ jobs:
       run: |
         git clone https://github.com/Tomoms/android_kernel_essential_msm8998 kernel
 
-    - name: Download clang
-      run: |
-        git clone --depth=1 \
-          https://github.com/kdrag0n/proton-clang \
-          clang
-
     - name: Build kernel
       run: |
         cd kernel
-
+        
         export ARCH=arm64
         export SUBARCH=arm64
-
-        export PATH=$GITHUB_WORKSPACE/clang/bin:$PATH
-
-        which ld
-        ld --version
         
-        which clang
-        clang --version
-        
-        echo $PATH
-
         make O=out lineage_osmata_defconfig
-
-        make -j$(nproc) \
-          O=out \
-          ARCH=arm64 \
-          CC=clang \
-          CLANG_TRIPLE=aarch64-linux-gnu-
+        
+        make -j$(nproc) O=out
 
     - name: Upload kernel
       uses: actions/upload-artifact@v4
